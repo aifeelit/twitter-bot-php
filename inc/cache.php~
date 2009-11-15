@@ -1,0 +1,63 @@
+<?php
+class cache
+{
+public $caching;
+
+public function __construct()
+{
+$this->caching = $cache = new Object_Cache();
+}
+
+public function start($fileId,$cont) 
+{
+	$this->caching->start($fileId);
+}
+
+public function end()
+{
+    $this->caching->end();
+}
+
+
+}
+
+class Object_Cache
+{
+
+public $cacheDir  = "./cache/";
+public $cacheTime = 50;
+public $fileID;
+public $cont;
+function __construct()
+{
+
+}
+
+
+public function start($fileID,$cont)
+{
+ $this->fileID=$fileID;
+ $this->cont = $cont;
+ if(file_exists($this->cacheDir.$this->fileID) 
+    && ((time()-filemtime($this->cacheDir.$this->fileID))<=$this->cacheTime))
+ {
+  include $this->cacheDir.$this->fileID;
+  return false;
+ }
+ else
+ {
+ ob_start();
+ return true;
+ }
+}
+
+public function end()
+{
+   file_put_contents($this->cacheDir.$this->fileID,$this->cont,LOCK_EX);
+}
+
+
+
+}
+
+?>
